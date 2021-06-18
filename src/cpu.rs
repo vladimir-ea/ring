@@ -205,14 +205,14 @@ pub(crate) mod arm {
             // TODO: Add static feature detection to other targets.
             // TODO: Combine static feature detection with runtime feature
             //       detection.
-            #[cfg(all(target_arch = "aarch64", target_vendor = "apple"))]
+            #[cfg(all(any(target_arch = "aarch64", target_arch = "arm64_32"), target_vendor = "apple"))]
             const ARMCAP_STATIC: u32 = 0
                 $(  | $name.mask
                 )+;
-            #[cfg(not(all(target_arch = "aarch64", target_vendor = "apple")))]
+            #[cfg(not(all(any(target_arch = "aarch64", target_arch = "arm64_32"), target_vendor = "apple")))]
             const ARMCAP_STATIC: u32 = 0;
 
-            #[cfg(all(target_arch = "aarch64", target_vendor = "apple"))]
+            #[cfg(all(any(target_arch = "aarch64", target_arch = "arm64_32"), target_vendor = "apple"))]
             #[test]
             fn test_armcap_static_available() {
                 let features = crate::cpu::features();
@@ -290,7 +290,7 @@ pub(crate) mod arm {
     }
 
     #[cfg(all(
-        any(target_arch = "arm", target_arch = "aarch64"),
+        any(target_arch = "arm", target_arch = "aarch64", target_arch = "arm64_32"),
         target_vendor = "apple"
     ))]
     #[test]

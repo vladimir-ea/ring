@@ -189,7 +189,7 @@ use self::sysrand_or_urandom::fill as fill_impl;
 ))]
 use self::urandom::fill as fill_impl;
 
-#[cfg(any(target_os = "macos", target_os = "ios"))]
+#[cfg(any(target_os = "macos", target_os = "ios", target_os = "watchos"))]
 use self::darwin::fill as fill_impl;
 
 #[cfg(any(target_os = "fuchsia"))]
@@ -366,7 +366,7 @@ mod urandom {
     }
 }
 
-#[cfg(any(target_os = "macos", target_os = "ios"))]
+#[cfg(any(target_os = "macos", target_os = "ios", target_os = "watchos"))]
 mod darwin {
     use crate::{c, error};
 

@@ -30,6 +30,8 @@ const X86: &str = "x86";
 const X86_64: &str = "x86_64";
 const AARCH64: &str = "aarch64";
 const ARM: &str = "arm";
+const ARM64_32: &str = "arm64_32";
+
 
 #[rustfmt::skip]
 const RING_SRCS: &[(&[&str], &str)] = &[
@@ -40,12 +42,12 @@ const RING_SRCS: &[(&[&str], &str)] = &[
     (&[], "crypto/mem.c"),
     (&[], "crypto/poly1305/poly1305.c"),
 
-    (&[AARCH64, ARM, X86_64, X86], "crypto/crypto.c"),
-    (&[AARCH64, ARM, X86_64, X86], "crypto/curve25519/curve25519.c"),
-    (&[AARCH64, ARM, X86_64, X86], "crypto/fipsmodule/ec/ecp_nistz.c"),
-    (&[AARCH64, ARM, X86_64, X86], "crypto/fipsmodule/ec/gfp_p256.c"),
-    (&[AARCH64, ARM, X86_64, X86], "crypto/fipsmodule/ec/gfp_p384.c"),
-    (&[AARCH64, ARM, X86_64, X86], "crypto/fipsmodule/ec/p256.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/crypto.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/curve25519/curve25519.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/fipsmodule/ec/ecp_nistz.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/fipsmodule/ec/gfp_p256.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/fipsmodule/ec/gfp_p384.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/fipsmodule/ec/p256.c"),
 
     (&[X86_64, X86], "crypto/cpu-intel.c"),
 
@@ -68,8 +70,8 @@ const RING_SRCS: &[(&[&str], &str)] = &[
     (&[X86_64], SHA512_X86_64),
     (&[X86_64], "crypto/cipher_extra/asm/chacha20_poly1305_x86_64.pl"),
 
-    (&[AARCH64, ARM], "crypto/fipsmodule/aes/asm/aesv8-armx.pl"),
-    (&[AARCH64, ARM], "crypto/fipsmodule/modes/asm/ghashv8-armx.pl"),
+    (&[AARCH64, ARM64_32, ARM], "crypto/fipsmodule/aes/asm/aesv8-armx.pl"),
+    (&[AARCH64, ARM64_32, ARM], "crypto/fipsmodule/modes/asm/ghashv8-armx.pl"),
 
     (&[ARM], "crypto/fipsmodule/aes/asm/bsaes-armv7.pl"),
     (&[ARM], "crypto/fipsmodule/aes/asm/vpaes-armv7.pl"),
@@ -82,11 +84,11 @@ const RING_SRCS: &[(&[&str], &str)] = &[
     (&[ARM], "crypto/fipsmodule/sha/asm/sha256-armv4.pl"),
     (&[ARM], "crypto/fipsmodule/sha/asm/sha512-armv4.pl"),
 
-    (&[AARCH64], "crypto/fipsmodule/aes/asm/vpaes-armv8.pl"),
-    (&[AARCH64], "crypto/fipsmodule/bn/asm/armv8-mont.pl"),
-    (&[AARCH64], "crypto/chacha/asm/chacha-armv8.pl"),
-    (&[AARCH64], "crypto/fipsmodule/modes/asm/ghash-neon-armv8.pl"),
-    (&[AARCH64], SHA512_ARMV8),
+    (&[AARCH64, ARM64_32], "crypto/fipsmodule/aes/asm/vpaes-armv8.pl"),
+    (&[AARCH64, ARM64_32], "crypto/fipsmodule/bn/asm/armv8-mont.pl"),
+    (&[AARCH64, ARM64_32], "crypto/chacha/asm/chacha-armv8.pl"),
+    (&[AARCH64, ARM64_32], "crypto/fipsmodule/modes/asm/ghash-neon-armv8.pl"),
+    (&[AARCH64, ARM64_32], SHA512_ARMV8),
 ];
 
 const SHA256_X86_64: &str = "crypto/fipsmodule/sha/asm/sha256-x86_64.pl";
@@ -209,6 +211,13 @@ const ASM_TARGETS: &[AsmTarget] = &[
     },
     AsmTarget {
         oss: MACOS_ABI,
+        arch: "arm64_32",
+        perlasm_format: "ios64",
+        asm_extension: "S",
+        preassemble: false,
+    },
+    AsmTarget {
+        oss: MACOS_ABI,
         arch: "x86_64",
         perlasm_format: "macosx",
         asm_extension: "S",
@@ -267,7 +276,7 @@ const LINUX_ABI: &[&str] = &[
 
 /// Operating systems that have the same ABI as macOS on every architecture
 /// mentioned in `ASM_TARGETS`.
-const MACOS_ABI: &[&str] = &["ios", "macos"];
+const MACOS_ABI: &[&str] = &["ios", "macos", "watchos"];
 
 const WINDOWS: &str = "windows";
 
