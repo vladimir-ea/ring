@@ -33,6 +33,7 @@ const X86: &str = "x86";
 const X86_64: &str = "x86_64";
 const AARCH64: &str = "aarch64";
 const ARM: &str = "arm";
+const ARM64_32: &str = "arm64_32";
 
 #[rustfmt::skip]
 const RING_SRCS: &[(&[&str], &str)] = &[
@@ -43,12 +44,12 @@ const RING_SRCS: &[(&[&str], &str)] = &[
     (&[], "crypto/mem.c"),
     (&[], "crypto/poly1305/poly1305.c"),
 
-    (&[AARCH64, ARM, X86_64, X86], "crypto/crypto.c"),
-    (&[AARCH64, ARM, X86_64, X86], "crypto/curve25519/curve25519.c"),
-    (&[AARCH64, ARM, X86_64, X86], "crypto/fipsmodule/ec/ecp_nistz.c"),
-    (&[AARCH64, ARM, X86_64, X86], "crypto/fipsmodule/ec/ecp_nistz256.c"),
-    (&[AARCH64, ARM, X86_64, X86], "crypto/fipsmodule/ec/gfp_p256.c"),
-    (&[AARCH64, ARM, X86_64, X86], "crypto/fipsmodule/ec/gfp_p384.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/crypto.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/curve25519/curve25519.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/fipsmodule/ec/ecp_nistz.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/fipsmodule/ec/ecp_nistz256.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/fipsmodule/ec/gfp_p256.c"),
+    (&[AARCH64, ARM, ARM64_32, X86_64, X86], "crypto/fipsmodule/ec/gfp_p384.c"),
 
     (&[X86_64, X86], "crypto/cpu-intel.c"),
 
@@ -86,12 +87,12 @@ const RING_SRCS: &[(&[&str], &str)] = &[
     (&[ARM], "crypto/fipsmodule/sha/asm/sha256-armv4.pl"),
     (&[ARM], "crypto/fipsmodule/sha/asm/sha512-armv4.pl"),
 
-    (&[AARCH64], "crypto/fipsmodule/aes/asm/vpaes-armv8.pl"),
-    (&[AARCH64], "crypto/fipsmodule/bn/asm/armv8-mont.pl"),
-    (&[AARCH64], "crypto/chacha/asm/chacha-armv8.pl"),
-    (&[AARCH64], "crypto/fipsmodule/ec/asm/ecp_nistz256-armv8.pl"),
-    (&[AARCH64], "crypto/fipsmodule/modes/asm/ghash-neon-armv8.pl"),
-    (&[AARCH64], SHA512_ARMV8),
+    (&[AARCH64, ARM64_32], "crypto/fipsmodule/aes/asm/vpaes-armv8.pl"),
+    (&[AARCH64, ARM64_32], "crypto/fipsmodule/bn/asm/armv8-mont.pl"),
+    (&[AARCH64, ARM64_32], "crypto/chacha/asm/chacha-armv8.pl"),
+    (&[AARCH64, ARM64_32], "crypto/fipsmodule/ec/asm/ecp_nistz256-armv8.pl"),
+    (&[AARCH64, ARM64_32], "crypto/fipsmodule/modes/asm/ghash-neon-armv8.pl"),
+    (&[AARCH64, ARM64_32], SHA512_ARMV8),
 ];
 
 const SHA256_X86_64: &str = "crypto/fipsmodule/sha/asm/sha256-x86_64.pl";
@@ -219,15 +220,16 @@ const ASM_TARGETS: &[(&str, Option<&str>, Option<&str>)] = &[
     ("x86_64", Some("macos"), Some("macosx")),
     ("x86_64", Some(WINDOWS), Some("nasm")),
     ("x86_64", None, Some("elf")),
+    ("arm64_32", Some("watchos"), Some("ios64")),
+    ("aarch64", Some("watchos"), Some("ios64")),
     ("aarch64", Some("ios"), Some("ios64")),
     ("aarch64", Some("macos"), Some("ios64")),
     ("aarch64", None, Some("linux64")),
-    ("arm64_32", Some("watchos"), Some("ios64")),
     ("x86", Some(WINDOWS), Some("win32n")),
     ("x86", Some("ios"), Some("macosx")),
     ("x86", None, Some("elf")),
     ("arm", Some("ios"), Some("ios32")),
-    ("arm", Some("watchos"), Some("ios32")),
+    ("arm", Some("watchos"), None), // setting to 'None' compiles - but does not use asm
     ("arm", None, Some("linux32")),
     ("wasm32", None, None),
 ];
@@ -267,7 +269,7 @@ fn ring_build_rs_main() {
 
     // Published builds are always release builds.
     let is_debug = is_git && env::var("DEBUG").unwrap() != "false";
-
+    println!("arch = {}, os = {}, env = {}", arch, os, env);
     let target = Target {
         arch,
         os,
@@ -594,14 +596,14 @@ fn cc(
         }
     }
 
-    if warnings_are_errors {
-        let flag = if &target.env != "msvc" {
-            "-Werror"
-        } else {
-            "/WX"
-        };
-        let _ = c.flag(flag);
-    }
+    // if warnings_are_errors {
+    //     let flag = if &target.env != "msvc" {
+    //         "-Werror"
+    //     } else {
+    //         "/WX"
+    //     };
+    //     let _ = c.flag(flag);
+    // }
     if is_musl {
         // Some platforms enable _FORTIFY_SOURCE by default, but musl
         // libc doesn't support it yet. See
