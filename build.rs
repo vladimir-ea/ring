@@ -229,7 +229,7 @@ const ASM_TARGETS: &[(&str, Option<&str>, Option<&str>)] = &[
     ("x86", Some("ios"), Some("macosx")),
     ("x86", None, Some("elf")),
     ("arm", Some("ios"), Some("ios32")),
-    ("arm", Some("watchos"), None), // setting to 'None' compiles - but does not use asm
+    ("arm", Some("watchos"), Some("ios32")),
     ("arm", None, Some("linux32")),
     ("wasm32", None, None),
 ];

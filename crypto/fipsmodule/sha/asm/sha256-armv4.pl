@@ -221,7 +221,7 @@ K256:
 .extern GFp_armcap_P
 .hidden GFp_armcap_P
 .LOPENSSL_armcap:
-.word	GFp_armcap_P-.Lsha256_block_data_order
+.word	GFp_armcap_P,.-.Lsha256_block_data_order
 #endif
 .align	5
 

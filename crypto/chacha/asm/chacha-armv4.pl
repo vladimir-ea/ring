@@ -200,7 +200,7 @@ $code.=<<___;
 .extern GFp_armcap_P
 .hidden GFp_armcap_P
 .LOPENSSL_armcap:
-.word   GFp_armcap_P-.LChaCha20_ctr32
+.word   GFp_armcap_P,.-.LChaCha20_ctr32
 #else
 .word	-1
 #endif

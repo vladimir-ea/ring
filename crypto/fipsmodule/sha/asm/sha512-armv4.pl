@@ -281,7 +281,7 @@ WORD64(0x5fcb6fab,0x3ad6faec, 0x6c44198c,0x4a475817)
 .extern GFp_armcap_P
 .hidden GFp_armcap_P
 .LOPENSSL_armcap:
-.word	GFp_armcap_P-.Lsha512_block_data_order
+.word	GFp_armcap_P,.-.Lsha512_block_data_order
 .skip	32-4
 #else
 .skip	32

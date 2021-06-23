@@ -116,7 +116,7 @@ $code=<<___;
 .hidden GFp_armcap_P
 .align	5
 .LOPENSSL_armcap:
-.word	GFp_armcap_P-.Lbn_mul_mont
+.word	GFp_armcap_P,.-.Lbn_mul_mont
 #endif
 
 .global	GFp_bn_mul_mont

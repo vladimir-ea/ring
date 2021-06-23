@@ -357,3 +357,7 @@ rpath = false
 lto = true
 debug-assertions = false
 codegen-units = 1
+
+[patch.crates-io]
+cc = { git = "https://github.com/vladimir-ea/cc-rs", branch = "watch_os" }
+libc = { git = "https://github.com/vladimir-ea/libc", branch = "watch_os" }
